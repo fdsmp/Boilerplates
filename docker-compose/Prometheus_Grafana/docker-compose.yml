@@ -1,0 +1,54 @@
+version: "3.8"
+
+services:
+  prometheus:
+    image: docker.io/prom/prometheus:v2.51.2
+    container_name: prometheus
+    ports:
+      - "9090:9090"
+    command: "--config.file=/config/prometheus.yml"  # Modifier le chemin du fichier de configuration ici
+    volumes:
+      - ./config:/config  # Montage du répertoire ./config de l'hôte à /config dans le conteneur
+      - prometheus-data:/prometheus
+    restart: unless-stopped
+  
+  grafana:
+    image: docker.io/grafana/grafana:latest
+    container_name: grafana
+    ports:
+      - "3000:3000"
+    volumes:
+      - grafana-data:/var/lib/grafana
+    restart: unless-stopped
+# Quelques exporters
+  node_exporter:
+    image: quay.io/prometheus/node-exporter:v1.7.0
+    container_name: node_exporter
+    command: "--path.rootfs=/host"
+    pid: host
+    restart: unless-stopped
+    volumes:
+      - /:/host:ro,rslave
+  
+  cadvisor:
+    image: gcr.io/cadvisor/cadvisor:v0.49.1
+    container_name: cadvisor
+    ports:
+      - 8080:8080
+    volumes:
+      - /:/rootfs:ro
+      - /var/run:/var/run:ro
+      - /sys:/sys:ro
+      - /var/lib/docker/:/var/lib/docker:ro
+      - /dev/disk/:/dev/disk:ro
+    devices:
+      - /dev/kmsg
+    privileged: true
+    restart: unless-stopped
+
+volumes:
+  prometheus-data:
+    driver: local
+    
+  grafana-data:
+    driver: local

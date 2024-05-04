@@ -1,0 +1,23 @@
+version: '2'
+services:
+  apache:
+    container_name: apache
+    image: httpd:latest
+    networks:
+      - revproxy_net
+    ports:
+      - "80:80"
+      - "443:443"
+    environment:
+      - TZ=Europe/Paris
+    restart: always
+    volumes: 
+      - ./certs:/etc/ssl/certs/wildcard
+      - ./htdocs:/usr/local/apache2/htdocs
+      - ./httpd.conf:/usr/local/apache2/conf/httpd.conf 
+      - ./httpd-ssl.conf:/usr/local/apache2/conf/extra/httpd-ssl.conf
+      - ./logs:/usr/local/apache2/logs
+
+networks:
+  revproxy_net:
+    name: revproxy_net

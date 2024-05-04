@@ -1,0 +1,37 @@
+version: '3.8'
+
+services:
+  jenkins:
+    container_name: jenkins
+    image: jenkins/jenkins # Attention à la version de java
+    # ports:
+    #   - "80:8080"
+    #   - "50000:50000"
+    volumes:
+      - jenkins_home:/var/jenkins_home
+    environment:
+      - TZ=Europe/Paris
+    networks:
+      - jenkins_network
+  
+  proxy:
+    container_name: proxy
+    image: nginx:latest
+    ports:
+      - "80:80"
+      - "443:443"
+    environment:
+      - TZ=Europe/Paris
+    networks:
+      - jenkins_network
+    volumes:
+      - ./nginx:/etc/nginx/conf.d
+      - ./certs:/etc/ssl/certs
+
+volumes:
+  jenkins_home:
+    name: jenkins_home
+
+networks:
+  jenkins_network:
+    name: jenkins_network

@@ -1,0 +1,49 @@
+version: '3.9'
+services:
+  php-fpm:
+    container_name: php-fpm
+    networks:
+      - php-fpm_net
+    build:
+      context: .
+      dockerfile: Dockerfile
+    volumes:
+    # Mounts the local 'app' directory to the container's Nginx root
+      - ./app:/var/www/html  
+    depends_on:
+    # Depends on the MySQL database service
+      - mysql-db  
+  
+  nginx:
+    container_name: nginx
+    networks:
+      - php-fpm_net
+      - npm_network
+    build:
+      context: .
+      dockerfile: ./nginx/Dockerfile
+    volumes:
+    # Mountlocal 'app' directory to the Nginx root
+      - ./app:/var/www/html 
+    # ports:
+    #   - "80:80"
+    depends_on:
+      - php-fpm  # Depends on the PHP-FPM service
+      - mysql-db  # Depends on the MySQL database service
+
+  mysql-db:
+    networks:
+      - php-fpm_net
+    container_name: mysql-db
+    image: mysql:latest
+    environment:
+      - MYSQL_ROOT_PASSWORD=$MYSQL_ROOT_PASSWORD
+      - MYSQL_DATABASE=$MYSQL_DATABASE
+      - MYSQL_USER=$MYSQL_USER
+      - MYSQL_PASSWORD=$MYSQL_PASSWORD
+
+networks:
+  npm_network: # réseau de votre reverse proxy (ssl)
+    external: true
+  php-fpm_net:
+    name: php-fpm_net

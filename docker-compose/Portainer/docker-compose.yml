@@ -1,0 +1,22 @@
+version: "3.8"
+
+services:
+  portainer:
+    container_name: portainer
+    image: portainer/portainer-ce:latest
+    volumes:
+      - portainer_data:/data portainer/portainer-ce:latest
+      - /var/run/docker.sock:/var/run/docker.sock
+    # ports:
+    #   - 9443:9443
+    networks:
+      - npm_network
+
+volumes:
+  portainer_data:
+
+networks:
+  # reverse proxy network
+  npm_network:
+    name: "npm_network"
+    external: true

@@ -1,0 +1,38 @@
+version: '3'
+services:
+  mediawiki:
+    image: mediawiki:1.41.1
+    restart: always
+    networks:
+      - npm_network
+      - wiki_backend
+    # ports:
+    #   - 8888:80
+    links:
+      - wikidb
+    volumes:
+      - ./images:/var/www/html/images
+      # After initial setup, download LocalSettings.php to the same directory as
+      # this yaml and uncomment the following line and use compose to restart
+      # the mediawiki service
+      - ./LocalSettings.php:/var/www/html/LocalSettings.php
+  # This key also defines the name of the database host used during setup instead of the default "localhost"
+  wikidb:
+    image: mariadb:11.3.2
+    restart: always
+    environment:
+      - MYSQL_DATABASE=$MYSQL_DATABASE
+      - MYSQL_USER=$MYSQL_USER
+      - MYSQL_PASSWORD=$MYSQL_PASSWORD
+      - MYSQL_ROOT_PASSWORD=$MYSQL_ROOT_PASSWORD
+    networks:
+      - wiki_backend
+    volumes:
+      - ./db:/var/lib/mysql
+
+networks:
+  # réseau de votre reverse proxy
+  npm_network:
+    external: true
+  wiki_backend:
+    name: wiki_backend

@@ -1,0 +1,22 @@
+
+services:
+  onlyoffice:
+    container_name: onlyoffice 
+    image: onlyoffice/documentserver:latest
+    restart: always
+    environment:
+      - TZ=Europe/Paris
+      - JWT_ENABLED=true
+      - JWT_SECRET= # Mettre ici un mot de passe aléatoire
+    volumes:
+      - ./logs:/var/log/onlyoffice
+      - ./data:/var/www/onlyoffice/Data
+      - ./lib:/var/lib/onlyoffice
+      - ./db:/var/lib/postgresql
+    networks:
+      - only_net
+    ports:
+      - 8080:80
+networks:
+  only_net:
+    name: only_net
