@@ -2,8 +2,7 @@
 Créez le répertoire `certs` dans répertoire ou se trouve le fichier docker-compose.yml. 
 Déposez le certificat, la clé et le cachain dans le répertoire certs.
 
-Créez le répertoire `htdocs`.
-Placez les fichiers `httpd.conf` et `httpd-ssl.conf` dans le répertoire `htdocs`.
+Placez les fichiers `httpd.conf` et `httpd-ssl.conf` dans le répertoire racine du projet.
     -> Remplacez `nextcloud_dns_name` et `onlyoffice_dns_name` par les noms de domaines de vos serveur nextcloud et onlyoffice.
 
 
