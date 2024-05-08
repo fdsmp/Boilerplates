@@ -324,3 +324,32 @@ http://localhost:8080/guacamole
 > - password : **guacadmin**
 
 Configure the firewall on your server to only allow necessary network traffic. Do not expose the Guacamole web interface directly. Use a reverse proxy and SSL to secure communications.
+## SSH Connexion issue
+
+If the SSH connection fails, it appears to be related to the cryptographic backend used during the compilation of the libssh component.
+You must compile the libssh library using an OpenSSL cryptographic backend.
+
+Back up the existing libs :
+
+```shell
+cd ~/
+cp /usr/lib/x86_64-linux-gnu/libssh2.so .
+```
+
+Clone the repo, create folders
+
+```
+apt-get install -y git libssh-dev cmake
+git clone https://github.com/libssh2/libssh2.git
+cd libssh2
+mkdir bin
+cd bin
+```
+
+Recompile the libs
+
+```
+cmake -DCRYPTO_BACKEND=OpenSSL ..
+cmake --build .
+cp src/libssh2.so* /usr/lib/x86_64-linux-gnu
+```
