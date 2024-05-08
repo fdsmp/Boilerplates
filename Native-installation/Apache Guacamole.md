@@ -353,3 +353,42 @@ cmake -DCRYPTO_BACKEND=OpenSSL ..
 cmake --build .
 cp src/libssh2.so* /usr/lib/x86_64-linux-gnu
 ```
+
+## Nginx Reverse Proxy Configuration
+
+```json
+server {
+    listen 443 ssl;
+    server_name {{your_hostname}};
+
+    access_log /var/log/nginx/{{your_hostname}}_access.log;
+    error_log /var/log/nginx/{{your_hostname}}_error.log;
+
+    location / {
+        proxy_pass http://localhost:8080/guacamole/;
+        proxy_buffering off;
+        proxy_http_version 1.1;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header Upgrade $http_upgrade;
+        proxy_set_header Connection $http_connection;
+        proxy_cookie_path /guacamole/ /;
+    }
+
+    ssl_certificate /etc/ssl/certs/guacamole/cert.crt;
+    ssl_certificate_key /etc/ssl/certs/guacamole/priv.key;      
+}
+
+server {
+    listen 80;
+    server_name {{your_hostname}};
+
+    access_log /var/log/nginx/{{your_hostname}}_access.log;
+    error_log /var/log/nginx/{{your_hostname}}_error.log;
+
+    if ($host = {{your_hostname}}) {
+        return 301 https://$host$request_uri;
+    }
+
+    return 404;
+}
+```
